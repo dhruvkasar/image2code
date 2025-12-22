@@ -1,8 +1,17 @@
-import { GoogleGenAI, SchemaType, Type } from "@google/genai";
+import { GoogleGenAI } from "@google/genai";
 import { GenerationResult } from "../types";
 
-// Initialize Gemini Client
-const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+/**
+ * Initializes the Gemini Client lazily.
+ * This prevents the app from crashing on load if the API key is not immediately available.
+ */
+const getAiClient = () => {
+  const apiKey = process.env.API_KEY;
+  if (!apiKey) {
+    throw new Error("API Key is missing. Please ensure process.env.API_KEY is configured in your environment.");
+  }
+  return new GoogleGenAI({ apiKey });
+};
 
 /**
  * Converts a File object to a Base64 string suitable for the Gemini API.
@@ -30,6 +39,7 @@ const fileToPart = (file: File): Promise<{ inlineData: { data: string; mimeType:
 export const generateCodeFromImage = async (file: File): Promise<GenerationResult> => {
   try {
     const imagePart = await fileToPart(file);
+    const ai = getAiClient();
 
     // Using Gemini 3 Pro for high-reasoning coding capabilities
     const model = "gemini-3-pro-preview";
@@ -100,6 +110,7 @@ export const generateCodeFromImage = async (file: File): Promise<GenerationResul
  */
 export const refineCode = async (currentCode: string, instruction: string): Promise<GenerationResult> => {
   try {
+    const ai = getAiClient();
     const model = "gemini-3-pro-preview";
 
     const systemPrompt = `
@@ -128,7 +139,7 @@ export const refineCode = async (currentCode: string, instruction: string): Prom
 
     const response = await ai.models.generateContent({
       model: model,
-      contents: { text: prompt },
+      contents: prompt,
       config: {
         systemInstruction: systemPrompt,
         temperature: 0.2, // Slightly higher for creative logic implementation
