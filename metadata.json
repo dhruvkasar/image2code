@@ -1,0 +1,7 @@
+{
+  "name": "Image to Code AI",
+  "description": "Upload a screenshot or sketch, and this AI will convert it into a fully functional, pixel-perfect React application using Gemini 3 Pro.",
+  "requestFramePermissions": [
+    "camera"
+  ]
+}
