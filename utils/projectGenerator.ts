@@ -191,11 +191,7 @@ export const downloadProject = async (code: string) => {
   });
 
   const content = await zip.generateAsync({ type: "blob" });
-  
-  // Handle file-saver import variations
-  // @ts-ignore
-  const saveAs = FileSaver.saveAs || FileSaver;
-  saveAs(content, "image2code-project.zip");
+  FileSaver.saveAs(content, "image2code-project.zip");
 };
 
 export const openInStackBlitz = (code: string) => {
