@@ -86,7 +86,7 @@ const App: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen flex flex-col font-sans">
       {/* Header */}
       <header className="border-b-4 border-black bg-white sticky top-0 z-40">
         <div className="max-w-7xl mx-auto px-4 h-20 flex items-center justify-between">
@@ -107,7 +107,7 @@ const App: React.FC = () => {
         </div>
       </header>
 
-      <main className="max-w-[1600px] mx-auto p-6 lg:p-8">
+      <main className="max-w-[1600px] mx-auto p-6 lg:p-8 flex-1 w-full">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:h-[calc(100vh-140px)] min-h-[600px]">
           
           {/* Left Column: Input */}
@@ -265,6 +265,13 @@ const App: React.FC = () => {
           </div>
         </div>
       </main>
+      
+      {/* Footer Request */}
+      <footer className="w-full bg-[#FFE5B4] border-t-4 border-black p-4 text-center mt-8">
+        <p className="text-sm font-bold text-black uppercase tracking-wide">
+          Special thanks to <span className="underline decoration-2">Sir Jaiaditya Khemani</span> for the hands-on experience in the prompt engineering workshop at <span className="text-[#FF6B6B]">IIT Bombay</span>
+        </p>
+      </footer>
 
       {/* Fullscreen Modal Overlay */}
       {isFullscreen && (
