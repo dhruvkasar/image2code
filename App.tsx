@@ -12,6 +12,7 @@ const App: React.FC = () => {
   const [uploadedImage, setUploadedImage] = useState<string | null>(null);
   const [refinementPrompt, setRefinementPrompt] = useState<string>('');
   const [isFullscreen, setIsFullscreen] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<string>('');
 
   // Close fullscreen on Escape key
   useEffect(() => {
@@ -29,13 +30,15 @@ const App: React.FC = () => {
     reader.readAsDataURL(file);
 
     setStatus(AppStatus.ANALYZING);
+    setErrorMessage('');
 
     try {
       const result: GenerationResult = await generateCodeFromImage(file);
       setGeneratedCode(result.code);
       setStatus(AppStatus.COMPLETED);
-    } catch (error) {
+    } catch (error: any) {
       console.error(error);
+      setErrorMessage(error.message || "An unexpected error occurred");
       setStatus(AppStatus.ERROR);
     }
   };
@@ -46,17 +49,18 @@ const App: React.FC = () => {
     // We keep the image preview but switch status to show loading
     const previousStatus = status;
     setStatus(AppStatus.GENERATING); // Re-using generating state for refinement loading
+    setErrorMessage('');
 
     try {
       const result: GenerationResult = await refineCode(generatedCode, refinementPrompt);
       setGeneratedCode(result.code);
       setRefinementPrompt(''); // Clear input on success
       setStatus(AppStatus.COMPLETED);
-    } catch (error) {
+    } catch (error: any) {
       console.error(error);
       // Revert to completed state but maybe show an error toast (simplifying here by just reverting)
       setStatus(AppStatus.COMPLETED); 
-      alert("Failed to update code. Please try again.");
+      alert(error.message || "Failed to update code. Please try again.");
     }
   };
 
@@ -65,6 +69,7 @@ const App: React.FC = () => {
     setGeneratedCode('');
     setUploadedImage(null);
     setRefinementPrompt('');
+    setErrorMessage('');
   };
 
   const handleDownloadZip = async () => {
@@ -222,7 +227,9 @@ const App: React.FC = () => {
                         </svg>
                       </div>
                       <h3 className="text-2xl font-black uppercase mb-2">Generation Failed</h3>
-                      <p className="text-black font-medium border-2 border-black p-2 bg-white inline-block">Gemini hit a snag. Try again.</p>
+                      <p className="text-black font-medium border-2 border-black p-2 bg-white inline-block">
+                        {errorMessage || "Gemini hit a snag. Try again."}
+                      </p>
                    </div>
                 ) : (
                   <div className="flex flex-col items-center justify-center h-full text-gray-500 p-8">

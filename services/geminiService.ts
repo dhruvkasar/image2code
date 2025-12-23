@@ -6,7 +6,11 @@ import { GenerationResult } from "../types";
  * This prevents the app from crashing on load if the API key is not immediately available.
  */
 const getAiClient = () => {
-  return new GoogleGenAI({ apiKey: process.env.API_KEY });
+  const apiKey = process.env.API_KEY;
+  if (!apiKey) {
+    throw new Error("API Key is missing. Please ensure your environment variable API_KEY is set correctly.");
+  }
+  return new GoogleGenAI({ apiKey });
 };
 
 /**
@@ -95,9 +99,10 @@ export const generateCodeFromImage = async (file: File): Promise<GenerationResul
       code: cleanCode
     };
 
-  } catch (error) {
+  } catch (error: any) {
     console.error("Gemini API Error:", error);
-    throw new Error("Failed to generate code from the wireframe. Please try again.");
+    // Propagate the specific error message (like missing API key)
+    throw new Error(error.message || "Failed to generate code from the wireframe. Please try again.");
   }
 };
 
@@ -149,8 +154,8 @@ export const refineCode = async (currentCode: string, instruction: string): Prom
       code: cleanCode
     };
 
-  } catch (error) {
+  } catch (error: any) {
     console.error("Gemini Refinement Error:", error);
-    throw new Error("Failed to refine the code. Please try again.");
+    throw new Error(error.message || "Failed to refine the code. Please try again.");
   }
 };

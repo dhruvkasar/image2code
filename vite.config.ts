@@ -11,8 +11,8 @@ export default defineConfig(({ mode }) => {
     plugins: [react()],
     define: {
       // This allows process.env.API_KEY to work in the browser code
-      // We check env.API_KEY (loaded from .env) and process.env.API_KEY (system/shell variable)
-      'process.env.API_KEY': JSON.stringify(env.API_KEY || process.env.API_KEY)
+      // We use ( ... || '') to ensure it is always a string, avoiding undefined which Vite ignores.
+      'process.env.API_KEY': JSON.stringify(env.API_KEY || process.env.API_KEY || '')
     }
   };
 });
