@@ -7,9 +7,13 @@ import { GenerationResult } from "../types";
  */
 const getAiClient = () => {
   const apiKey = process.env.API_KEY;
-  if (!apiKey) {
-    throw new Error("API Key is missing. Please ensure your environment variable API_KEY is set correctly.");
+  
+  // Robust check for missing or invalid key
+  // Checks for: null, undefined, empty string, or literal string "undefined" which can happen during bad env replacement
+  if (!apiKey || apiKey === "undefined" || apiKey.trim() === "") {
+    throw new Error("API Key is missing. Please add your API_KEY to the Vercel Environment Variables.");
   }
+  
   return new GoogleGenAI({ apiKey });
 };
 
