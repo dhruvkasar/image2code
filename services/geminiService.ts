@@ -6,12 +6,13 @@ import { GenerationResult } from "../types";
  * This prevents the app from crashing on load if the API key is not immediately available.
  */
 const getAiClient = () => {
+  // Use process.env.API_KEY exclusively as per guidelines.
+  // The vite.config.ts polyfills process.env.API_KEY so this is safe.
   const apiKey = process.env.API_KEY;
   
   // Robust check for missing or invalid key
-  // Checks for: null, undefined, empty string, or literal string "undefined" which can happen during bad env replacement
   if (!apiKey || apiKey === "undefined" || apiKey.trim() === "") {
-    throw new Error("API Key is missing. Please add your API_KEY to the Vercel Environment Variables.");
+    throw new Error("API Key is missing. In Vercel, go to Settings > Environment Variables and add 'API_KEY' with your Google AI Studio key.");
   }
   
   return new GoogleGenAI({ apiKey });
