@@ -46,9 +46,9 @@ export const generateCodeFromImage = async (file: File): Promise<GenerationResul
     const imagePart = await fileToPart(file);
     const ai = getAiClient();
 
-    // STRICTLY using Gemini 2.5 Flash Latest.
-    // If you see errors about "gemini-3-pro", it means the old code is still cached/deployed.
-    const model = "gemini-2.5-flash-latest";
+    // Switched to Gemini 2.0 Flash (Stable) to fix 404s and Quota issues.
+    // This model is very fast and has generous free tier limits.
+    const model = "gemini-2.0-flash";
     console.log(`[Gemini Service] Generating code using model: ${model}`);
 
     const systemPrompt = `
@@ -106,9 +106,14 @@ export const generateCodeFromImage = async (file: File): Promise<GenerationResul
   } catch (error: any) {
     console.error("Gemini API Error:", error);
     
-    // Check for quota exhaustion and provide a friendly message
+    // Check for quota exhaustion
     if (error.message && (error.message.includes("429") || error.message.includes("Quota exceeded") || error.message.includes("RESOURCE_EXHAUSTED"))) {
-      throw new Error("Free Tier Quota Exceeded. Please wait 1-2 minutes and try again. (Model: Gemini 2.5 Flash)");
+      throw new Error("Free Tier Quota Exceeded. Please wait 1 minute and try again. (Model: Gemini 2.0 Flash)");
+    }
+    
+    // Check for 404 (Model not found)
+    if (error.message && error.message.includes("404")) {
+        throw new Error(`Model not found (${error.message}). Please contact support or update the model version.`);
     }
 
     throw new Error(error.message || "Failed to generate code from the wireframe. Please try again.");
@@ -121,7 +126,7 @@ export const generateCodeFromImage = async (file: File): Promise<GenerationResul
 export const refineCode = async (currentCode: string, instruction: string): Promise<GenerationResult> => {
   try {
     const ai = getAiClient();
-    const model = "gemini-2.5-flash-latest";
+    const model = "gemini-2.0-flash";
     console.log(`[Gemini Service] Refining code using model: ${model}`);
 
     const systemPrompt = `
@@ -167,7 +172,7 @@ export const refineCode = async (currentCode: string, instruction: string): Prom
   } catch (error: any) {
     console.error("Gemini Refinement Error:", error);
     if (error.message && (error.message.includes("429") || error.message.includes("Quota exceeded") || error.message.includes("RESOURCE_EXHAUSTED"))) {
-      throw new Error("Free Tier Quota Exceeded. Please wait 1-2 minutes and try again.");
+      throw new Error("Free Tier Quota Exceeded. Please wait 1 minute and try again.");
     }
     throw new Error(error.message || "Failed to refine the code. Please try again.");
   }
