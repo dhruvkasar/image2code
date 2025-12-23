@@ -6,11 +6,7 @@ import { GenerationResult } from "../types";
  * This prevents the app from crashing on load if the API key is not immediately available.
  */
 const getAiClient = () => {
-  const apiKey = process.env.API_KEY;
-  if (!apiKey) {
-    throw new Error("API Key is missing. Please ensure process.env.API_KEY is configured in your environment.");
-  }
-  return new GoogleGenAI({ apiKey });
+  return new GoogleGenAI({ apiKey: process.env.API_KEY });
 };
 
 /**
