@@ -107,7 +107,7 @@ const App: React.FC = () => {
           </div>
           
           <div className="hidden sm:block text-xs font-bold font-mono text-black px-4 py-2 bg-[#6BCB77] border-2 border-black shadow-[4px_4px_0px_0px_#000] rotate-2 hover:rotate-0 transition-transform cursor-default">
-             GEMINI 3 PRO ENABLED
+             GEMINI 2.5 FLASH ENABLED
           </div>
         </div>
       </header>
